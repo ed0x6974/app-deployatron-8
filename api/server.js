@@ -11,7 +11,7 @@ const sslOptions = {
   ca: fs.readFileSync('/root/.acme.sh/api.3deploy.shop_ecc/ca.cer'),
 };
 
-app.use(cors());
+app.use(cors())
 
 app.use(express.static(path.join(__dirname, 'static')));
 
