@@ -5,12 +5,6 @@ const fs = require('fs');
 const app = express();
 const https = require('https');
 
-const unusedVar = 'test';
-
-function badFunction(unusedParam1, unusedParam2) {
-  return 'hello';
-}
-
 const sslOptions = {
   key: fs.readFileSync('/root/.acme.sh/api.3deploy.shop_ecc/api.3deploy.shop.key'),
   cert: fs.readFileSync('/root/.acme.sh/api.3deploy.shop_ecc/api.3deploy.shop.cer'),
