@@ -16,16 +16,30 @@ jobs:
       NODE_VERSION: 18.19.1
     steps:
       - uses: actions/checkout@v4
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
+        with:
+          path: ~/.npm
+          key: ${{ env.cache-name }}
+          restore-keys: |
+            ${{ env.cache-name }}
+
       - name: Show repo files
         run: ls -la
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: ./api/package-lock.json
+
       - name: Install dependencies
         run: npm ci
+
       - name: Show Hello World
         run: npm run hello-world
+
       - name: Lint source code with eslint
         run: npm run lint
