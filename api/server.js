@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, 'static')));
 
 let users = [
   { id: 1, name: 'John Doe', age: 30 },
-  { id: 2, name: 'Jane Doe', age: 25 }
+  { id: 2, name: 'Jane Doe', age: 26 }
 ];
 
 app.get('/api/users', (req, res) => {
