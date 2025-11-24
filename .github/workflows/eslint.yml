@@ -25,8 +25,7 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ env.cache-name }}
-          restore-keys: |
-            ${{ env.cache-name }}
+          restore-keys: ${{ env.cache-name }}
 
       - name: Show repo files
         run: ls -la
