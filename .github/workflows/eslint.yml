@@ -44,6 +44,7 @@ jobs:
         run: npm run lint
   deploy:
     runs-on: ubuntu-latest
+    environment: deploy
     env: 
       NODE_VERSION: 18.19.1
     steps:
