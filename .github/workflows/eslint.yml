@@ -68,7 +68,7 @@ jobs:
           ssh-keyscan -H 91.98.202.21 >> ~/.ssh/known_hosts
 
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes deployatron@91.98.202.21 "echo Connected!"
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes ./ deployatron@91.98.202.21:~/
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r ./ deployatron@91.98.202.21:~/
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     
