@@ -53,7 +53,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          echo -e "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          echo "$SSH_PRIVATE_KEY" | tr '\\n' '\n' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 91.98.202.21 >> ~/.ssh/known_hosts
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./ deployatron@91.98.202.21:~/
