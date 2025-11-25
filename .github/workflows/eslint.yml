@@ -42,6 +42,47 @@ jobs:
 
       - name: Lint source code with eslint
         run: npm run lint
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./front
+      env:
+        NODE_VERSION: 18.19.1
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Cache node modules
+          id: cache-npm
+          uses: actions/cache@v4
+          env:
+            cache-name: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
+          with:
+            path: ~/.npm
+            key: ${{ env.cache-name }}
+            restore-keys: ${{ env.cache-name }}
+
+        - name: Show repo files
+          run: ls -la
+
+        - uses: actions/setup-node@v4
+          with:
+            node-version: ${{ env.NODE_VERSION }}
+
+        - name: Install dependencies
+          run: npm i
+        
+        - name: Build frontend
+          run: |
+            npm run build
+
+        - name: Upload build artifacts
+          uses: actions/upload-artifact@v3
+          with:
+            name: frontend-build
+            path: build/
+  
   deploy:
     runs-on: ubuntu-latest
     environment: deploy
@@ -50,7 +91,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up SSH key
+      - name: Download frontend build
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-build
+          path: ./frontend-build
+
+      - name: Copy files to server
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
@@ -68,7 +115,8 @@ jobs:
           ssh-keyscan -H 91.98.202.21 >> ~/.ssh/known_hosts
 
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes deployatron@91.98.202.21 "echo Connected!"
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r ./ deployatron@91.98.202.21:~/
+
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r ./frontend-build/ deployatron@91.98.202.21:~/front/dist
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     
