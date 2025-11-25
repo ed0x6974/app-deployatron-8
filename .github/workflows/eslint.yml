@@ -53,10 +53,21 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          echo "$SSH_PRIVATE_KEY" | tr '\\n' '\n' > ~/.ssh/id_rsa
+
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+
+          if [ -z "$SSH_PRIVATE_KEY" ]; then
+            echo "SSH_PRIVATE_KEY is empty!"
+          else
+            echo "SSH_PRIVATE_KEY is set."
+          fi
+
+          touch ~/.ssh/known_hosts
           ssh-keyscan -H 91.98.202.21 >> ~/.ssh/known_hosts
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./ deployatron@91.98.202.21:~/
+
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes deployatron@91.98.202.21 "echo Connected!"
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes ./ deployatron@91.98.202.21:~/
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     
