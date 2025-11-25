@@ -82,7 +82,10 @@ jobs:
         with:
           name: frontend-build
           path: ./build/
-  
+
+      - name: Check build output exists
+        run: ls -la build
+        
   deploy:
     runs-on: ubuntu-latest
     needs: build-frontend
@@ -96,7 +99,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-build
-          path: build/*
+          path: ./front/build/
 
       - name: Copy files to server
         run: |
@@ -117,7 +120,7 @@ jobs:
 
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes deployatron@91.98.202.21 "echo Connected!"
 
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r ./build/ deployatron@91.98.202.21:~/front/dist
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r ./front/build/ deployatron@91.98.202.21:~/front/dist
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     
