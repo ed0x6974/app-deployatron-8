@@ -54,8 +54,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 91.98.202.21 >> ~/.ssh/known_hosts
-          scp . deployatron@91.98.202.21:~/
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa . deployatron@91.98.202.21:~/
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     
