@@ -47,7 +47,7 @@ export function App() {
 
   return (
     <>
-      <h1>Parcel React App</h1>
+      <h1>Parcel React App test</h1>
     </>
   );
 }
