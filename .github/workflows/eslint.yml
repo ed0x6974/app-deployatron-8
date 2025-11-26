@@ -114,7 +114,7 @@ jobs:
 
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes deployatron@91.98.202.21 "echo Connected!"
 
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r ./front/dist/* deployatron@91.98.202.21:~/front/dist
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r ./front/dist/* deployatron@91.98.202.21:~/front
 
           rsync -avz --exclude="node_modules" --exclude="static" --exclude="static" --exclude=".git" --exclude=".gitignore" ./api/* deployatron@91.98.202.21:~/api
 
