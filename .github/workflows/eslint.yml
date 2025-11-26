@@ -18,7 +18,37 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Cache node modules
-        id: cache-npm
+        id: cache-api-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
+        with:
+          path: ~/.npm
+          key: ${{ env.cache-name }}
+          restore-keys: ${{ env.cache-name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint source code with eslint
+        run: npm run lint
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./front
+    env:
+      NODE_VERSION: 18.19.1
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache node modules
+        id: cache-front-npm
         uses: actions/cache@v4
         env:
           cache-name: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
@@ -36,42 +66,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Show Hello World
-        run: npm run hello-world
-
-      - name: Lint source code with eslint
-        run: npm run lint
-
-  build-frontend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./front
-    env:
-      NODE_VERSION: 18.19.1
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
-        with:
-          path: ~/.npm
-          key: ${{ env.cache-name }}
-          restore-keys: ${{ env.cache-name }}
-
-      - name: Show repo files
-        run: ls -la
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        run: npm i
         
       - name: Build frontend
         run: |
@@ -121,6 +115,10 @@ jobs:
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes deployatron@91.98.202.21 "echo Connected!"
 
           scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r ./front/dist/* deployatron@91.98.202.21:~/front/dist
+
+          rsync -avz --exclude="node_modules" --exclude="static" --exclude="static" --exclude=".git" --exclude=".gitignore" ./api/* deployatron@91.98.202.21:~/api
+
+
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     
