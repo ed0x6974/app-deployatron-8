@@ -112,13 +112,17 @@ jobs:
           touch ~/.ssh/known_hosts
           ssh-keyscan -H 91.98.202.21 >> ~/.ssh/known_hosts
 
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes deployatron@91.98.202.21 "echo Connected!"
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes deployatron@91.98.202.21 "echo Connected!"
 
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r ./front/dist/* deployatron@91.98.202.21:~/front
+          ssh -i ~/.ssh/id_rsa deployatron@91.98.202.21 \
+            "rm -rf ~/front/* && mkdir -p ~/front"
+          scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* deployatron@91.98.202.21:~/front
 
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes deployatron@91.98.202.21 \
+            "rm -rf ~/api/* && mkdir -p ~/api"
           rsync -avz --exclude="node_modules" --exclude="static" --exclude="static" --exclude=".git" --exclude=".gitignore" ./api/* deployatron@91.98.202.21:~/api
-
-
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes deployatron@91.98.202.21 \
+            "pm2 restart backend"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     
