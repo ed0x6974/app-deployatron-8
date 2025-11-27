@@ -123,6 +123,7 @@ jobs:
           rsync -avz --exclude="node_modules" --exclude="static" --exclude="static" --exclude=".git" --exclude=".gitignore" ./api/* deployatron@91.98.202.21:~/api
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes deployatron@91.98.202.21 \
             "pm2 restart backend"
+          ssh -i ~/.ssh/id_rsa deployatron@91.98.202.21 "cd api && npm ci"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     
