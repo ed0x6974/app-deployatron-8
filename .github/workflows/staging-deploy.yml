@@ -63,6 +63,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Get PR number
+        id: pr
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            return context.payload.pull_request.number;
+
       - name: Download frontend build
         uses: actions/download-artifact@v4
         with:
@@ -93,27 +102,31 @@ jobs:
 
           scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:~/staging/$STAGING_PATH
 
+          echo "staging_path=$STAGING_PATH" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = parseInt('$PR_NUMBER');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: '✅ This PR has been deployed to the staging: https://${process.env.STAGING_PATH}.${process.env.FRONT_HOST}/'
+            })
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.result }} 
+
       - name: Add label to PR
-        if: steps.pr.outputs.result
+        if: success() && steps.pr.outputs.result
         uses: actions-ecosystem/action-add-labels@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           labels: deployed-to-staging
           issue_number: ${{ steps.pr.outputs.result }}
-
-      - name: Comment on PR
-        if: steps.pr.outputs.result
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prNumber = parseInt('${{ steps.pr.outputs.result }}');
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              body: '✅ This PR has been deployed to the staging: https://$STAGING_PATH.$FRONT_HOST/'
-            })
 
 
     
