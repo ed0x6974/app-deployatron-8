@@ -97,6 +97,7 @@ jobs:
 
       - name: Copy files to server
         run: |
+          set -xe
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
@@ -116,7 +117,7 @@ jobs:
 
           ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP \
             "rm -rf ~/front/* && mkdir -p ~/front"
-            
+
           scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:~/front
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
