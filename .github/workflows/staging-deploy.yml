@@ -86,7 +86,7 @@ jobs:
           STAGING_PATH=$(echo "${GITHUB_HEAD_REF}-${GITHUB_TARGET_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
           echo "STAGING_PATH=$STAGING_PATH" >> $GITHUB_ENV
 
-          ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP mkdir -p ~/staging
+          ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP "mkdir -p ~/staging"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
             "rm -rf ~/staging/$STAGING_PATH && mkdir -p ~/staging/$STAGING_PATH"
