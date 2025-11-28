@@ -1,7 +1,7 @@
 name: staging-deploy
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [main]
   workflow_dispatch:
 
@@ -63,15 +63,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get PR number
-        id: pr
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            return context.payload.pull_request.number;
-
       - name: Download frontend build
         uses: actions/download-artifact@v4
         with:
@@ -98,27 +89,21 @@ jobs:
           ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP "mkdir -p ~/staging"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
-            "rm -rf ~/staging/$STAGING_PATH && mkdir -p ~/staging/$STAGING_PATH"
+            "rm -rf ~/staging/$STAGING_PATH && mkdir -p ~/staging/$STAGING_PATH/front"
 
-          scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:~/staging/$STAGING_PATH
+          scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:~/staging/$STAGING_PATH/front
 
           echo "staging_path=$STAGING_PATH" >> $GITHUB_OUTPUT
 
-      - name: Comment on PR
-        if: success()
-        uses: actions/github-script@v6
+      - name: Add staging url to comments
+        uses: mshick/add-pr-comment@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prNumber = parseInt(process.env.PR_NUMBER);
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              body: '✅ This PR has been deployed to the staging: https://${process.env.STAGING_PATH}.${process.env.FRONT_HOST}/'
-            })
-        env:
-          PR_NUMBER: ${{ steps.pr.outputs.result }} 
+          message: |
+            "✅ This PR has been deployed to staging: https://$STAGIN_PATH.$FRONT_HOST/"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          env:
+            STAGIN_PATH: ${{ STAGING_PATH}}
+            FRONT_HOST: ${{ FRONT_HOST }}
 
       - name: Add label to PR
         if: success() && steps.pr.outputs.result
