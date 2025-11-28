@@ -84,7 +84,7 @@ jobs:
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "echo Connected!"
 
-          STAGING_PATH=$(echo "${GITHUB_REF_NAME}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
+          STAGING_PATH=$(echo "${GITHUB_HEAD_REF}-${GITHUB_TARGET_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
           echo "STAGING_PATH=$STAGING_PATH" >> $GITHUB_ENV
 
           ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP \
@@ -95,5 +95,6 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER_IP: ${{ vars.SERVER_IP }}
           SERVER_USER: ${{ vars.USER_NAME }}
-          GITHUB_REF_NAME: ${{ github.head_ref }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_TARGET_REF: ${{ github.base_ref }}
     
