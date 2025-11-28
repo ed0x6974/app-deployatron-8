@@ -102,6 +102,6 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
           message: |
-            ✅ This PR has been deployed to staging: https://$STAGING_PATH.$FRONT_HOST/
+            ✅ This PR has been deployed to staging: https://${{ env.STAGING_PATH }}.${{ env.FRONT_HOST }}/
 
     
