@@ -100,13 +100,5 @@ jobs:
             "✅ This PR has been deployed to staging: https://$STAGING_PATH.$FRONT_HOST/"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add label to PR
-        if: success() && steps.pr.outputs.result
-        uses: actions-ecosystem/action-add-labels@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: deployed-to-staging
-          issue_number: ${{ steps.pr.outputs.result }}
-
 
     
