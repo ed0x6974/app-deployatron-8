@@ -1,7 +1,7 @@
 name: staging-deploy
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -102,6 +102,5 @@ jobs:
           message: |
             "✅ This PR has been deployed to staging: https://$STAGING_PATH.$FRONT_HOST/"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-
 
     
