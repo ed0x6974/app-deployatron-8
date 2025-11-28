@@ -59,7 +59,7 @@ jobs:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SERVER_IP: ${{ vars.SERVER_IP }}
       SERVER_USER: ${{ vars.USER_NAME }}
-      FRONT_HOST: ${{ vars.FRON_HOST }}
+      FRONT_HOST: ${{ vars.FRONT_HOST }}
       GITHUB_HEAD_REF: ${{ github.head_ref }}
       GITHUB_TARGET_REF: ${{ github.base_ref }}
     steps:
