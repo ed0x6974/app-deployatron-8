@@ -101,9 +101,6 @@ jobs:
           message: |
             "✅ This PR has been deployed to staging: https://$STAGIN_PATH.$FRONT_HOST/"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          STAGIN_PATH: ${{ STAGING_PATH}}
-          FRONT_HOST: ${{ FRONT_HOST }}
 
       - name: Add label to PR
         if: success() && steps.pr.outputs.result
