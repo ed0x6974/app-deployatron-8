@@ -93,6 +93,9 @@ jobs:
 
           scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:~/staging/$STAGING_PATH/front
 
+      - name: Verify
+        run: echo "STAGING PATH is $STAGING_PATH"
+
       - name: Add staging url to comments
         uses: mshick/add-pr-comment@v2
         with:
