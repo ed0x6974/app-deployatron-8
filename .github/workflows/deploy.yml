@@ -116,14 +116,22 @@ jobs:
 
           ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP \
             "rm -rf ~/front/* && mkdir -p ~/front"
+            
           scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:~/front
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
             "rm -rf ~/api/* && mkdir -p ~/api"
-          rsync -avz --exclude="node_modules" --exclude="static" --exclude="static" --exclude=".git" --exclude=".gitignore" ./api/* $SERVER_USER@$SERVER_IP:~/api
+
+          rsync -avz -e "ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes" \
+            --exclude="node_modules" \
+            --exclude="static" \
+            --exclude=".git" \
+            ./api/* $SERVER_USER@$SERVER_IP:~/api
+
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
             "pm2 restart backend"
-          ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP "cd api && npm ci"
+
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "cd api && npm ci"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER_IP: ${{ vars.SERVER_IP }}
