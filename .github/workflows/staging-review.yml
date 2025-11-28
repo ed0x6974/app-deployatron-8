@@ -66,6 +66,7 @@ jobs:
 
       - name: Copy files to server
         run: |
+          set -xe
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
