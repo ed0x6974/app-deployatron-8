@@ -8,8 +8,6 @@ on:
 jobs:
   build-frontend:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     defaults:
       run:
         working-directory: ./front
@@ -53,6 +51,8 @@ jobs:
         
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     needs: build-frontend
     environment: deploy
     env: 
