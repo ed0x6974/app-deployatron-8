@@ -8,6 +8,8 @@ on:
 jobs:
   build-frontend:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     defaults:
       run:
         working-directory: ./front
@@ -100,7 +102,6 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
           message: |
-            "✅ This PR has been deployed to staging: https://$STAGING_PATH.$FRONT_HOST/"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+            ✅ This PR has been deployed to staging: https://$STAGING_PATH.$FRONT_HOST/
 
     
