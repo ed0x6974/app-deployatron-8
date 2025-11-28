@@ -136,4 +136,4 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER_IP: ${{ vars.SERVER_IP }}
-          SERVER_USER: ${{ vars.SERVER_USER }}
+          SERVER_USER: ${{ vars.USER_NAME }}
