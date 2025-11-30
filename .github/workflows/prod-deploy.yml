@@ -40,6 +40,7 @@ jobs:
   build-frontend:
     runs-on: ubuntu-latest
     needs: api-eslint
+    if: ${{ needs.api-eslint.result != 'failure' }}
     defaults:
       run:
         working-directory: ./front
