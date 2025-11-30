@@ -15,6 +15,8 @@ jobs:
       NODE_VERSION: ${{ vars.NODE_VERSION }}
       RUN_ESLINT: ${{ contains(github.event.head_commit.message, 'skip_eslint') == false }}
     steps:
+      - uses: actions/checkout@v4
+
       - name: Skip ESLint if commit contains skip_eslint
         run: |
           echo "RUN_ESLINT=$RUN_ESLINT"
@@ -22,8 +24,6 @@ jobs:
             echo "ESLint skipped"
             exit 0
           fi
-
-      - uses: actions/checkout@v4
 
       - name: Cache node modules
         id: cache-api-npm
