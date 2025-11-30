@@ -40,7 +40,10 @@ jobs:
   build-frontend:
     runs-on: ubuntu-latest
     needs: api-eslint
-    if: ${{ needs.api-eslint.result != 'failure' }}
+    if: |
+      always() &&
+      needs.api-eslint.result != 'failure' &&
+      needs.api-eslint.result != 'cancelled'
     defaults:
       run:
         working-directory: ./front
