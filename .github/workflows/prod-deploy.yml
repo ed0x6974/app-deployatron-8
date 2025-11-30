@@ -13,36 +13,20 @@ jobs:
         working-directory: ./api
     env: 
       NODE_VERSION: ${{ vars.NODE_VERSION }}
-      RUN_ESLINT2: ${{ contains(github.event.head_commit.message, 'skip_eslint') == false }}
+      RUN_ESLINT: ${{ contains(github.event.head_commit.message, 'skip_eslint') == false }}
       MESSAGE: ${{ github.event.head_commit.message }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Echo env.RUN_ESLINT2
+      - name: Skip eslint
         run: |
-          echo ${{ env.RUN_ESLINT2 }}
-
-      - name: Echo env.MESSAGE
-        run: |
-          echo ${{ env.MESSAGE }}
-
-      - name: Determine if ESLint should run
-        run: |
-          if [[ "$(git log -1 --pretty=%B)" == *"skip_eslint"* ]]; then
-            echo "RUN_ESLINT=false" >> $GITHUB_ENV
-          else
-            echo "RUN_ESLINT=true" >> $GITHUB_ENV
-          fi
-
-      - name: Skip ESLint if needed
-        run: |
-          echo "RUN_ESLINT=$RUN_ESLINT"
-          if [ "$RUN_ESLINT" != "true" ]; then
-            echo "ESLint skipped"
+          if [ "${RUN_ESLINT2}" = "false" ]; then
+            echo "eslint was skipped"
             exit 0
           fi
 
       - name: Cache node modules
+        if: env.RUN_ESLINT2 == 'true'
         id: cache-api-npm
         uses: actions/cache@v4
         env:
