@@ -63,6 +63,7 @@ jobs:
       FRONT_HOST: ${{ vars.FRONT_HOST }}
       GITHUB_HEAD_REF: ${{ github.head_ref }}
       GITHUB_TARGET_REF: ${{ github.base_ref }}
+      APP_PATH: ${{ vars.APP_PATH }}
     steps:
       - uses: actions/checkout@v4
 
@@ -89,23 +90,23 @@ jobs:
           STAGING_PATH=$(echo "${GITHUB_HEAD_REF}-${GITHUB_TARGET_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
           echo "STAGING_PATH=$STAGING_PATH" >> $GITHUB_ENV
 
-          ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP "mkdir -p ~/staging"
+          ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP "mkdir -p $APP_PATH/staging"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
-            "rm -rf ~/staging/$STAGING_PATH && mkdir -p ~/staging/$STAGING_PATH/front"
+            "rm -rf $APP_PATH/staging/$STAGING_PATH && mkdir -p $APP_PATH/staging/$STAGING_PATH/front"
 
-          scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:~/staging/$STAGING_PATH/front
+          scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:$APP_PATH/staging/$STAGING_PATH/front
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
-            "rm -rf ~/staging/$STAGING_PATH/api/* && mkdir -p ~/staging/$STAGING_PATH/api"
+            "rm -rf $APP_PATH/staging/$STAGING_PATH/api/* && mkdir -p $APP_PATH/staging/$STAGING_PATH/api"
 
           rsync -avz -e "ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes" \
             --exclude="node_modules" \
             --exclude="static" \
             --exclude=".git" \
-            ./api/* $SERVER_USER@$SERVER_IP:~/staging/$STAGING_PATH/api
+            ./api/* $SERVER_USER@$SERVER_IP:$APP_PATH/staging/$STAGING_PATH/api
 
-          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "cd ~/staging/$STAGING_PATH/api && npm ci"
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "cd $APP_PATH/staging/$STAGING_PATH/api && npm ci"
 
       - name: Verify
         run: echo "STAGING PATH is $STAGING_PATH"

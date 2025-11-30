@@ -12,6 +12,7 @@ jobs:
     environment: deploy
     env: 
       NODE_VERSION: ${{ vars.NODE_VERSION }}
+      APP_PATH: ${{ vars.APP_PATH }}
     steps:
       - name: Remove staging files from server
         run: |
@@ -31,7 +32,7 @@ jobs:
           echo "STAGING_PATH=$STAGING_PATH" >> $GITHUB_ENV
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
-            "rm -rf ~/staging/$STAGING_PATH"
+            "rm -rf $APP_PATH/staging/$STAGING_PATH"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER_IP: ${{ vars.SERVER_IP }}

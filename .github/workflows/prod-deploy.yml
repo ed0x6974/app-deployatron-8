@@ -100,6 +100,7 @@ jobs:
     environment: deploy
     env: 
       NODE_VERSION: ${{ vars.NODE_VERSION }}
+      APP_PATH: ${{ vars.APP_PATH }}
     steps:
       - uses: actions/checkout@v4
 
@@ -124,20 +125,20 @@ jobs:
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "echo Connected!"
 
           ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP \
-            "rm -rf ~/front/* && mkdir -p ~/front"
+            "rm -rf $APP_PATH/front/* && mkdir -p $APP_PATH/front"
 
-          scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:~/front
+          scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:$APP_PATH/front
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
-            "rm -rf ~/api/* && mkdir -p ~/api"
+            "rm -rf $APP_PATH/api/* && mkdir -p $APP_PATH/api"
 
           rsync -avz -e "ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes" \
             --exclude="node_modules" \
             --exclude="static" \
             --exclude=".git" \
-            ./api/* $SERVER_USER@$SERVER_IP:~/api
+            ./api/* $SERVER_USER@$SERVER_IP:$APP_PATH/api
 
-          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "cd api && npm ci"
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "cd $APP_PATH/api && npm ci"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
             "pm2 restart backend"
