@@ -3,25 +3,17 @@ name: staging-deploy
 on:
   pull_request:
     branches: [main]
+    types: [closed]
   workflow_dispatch:
 
 jobs:
   cleanup:
     runs-on: ubuntu-latest
-    needs: build-frontend
     environment: deploy
     env: 
-      NODE_VERSION: 18.19.1
+      NODE_VERSION: ${{ vars.NODE_VERSION }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Download frontend build
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-build
-          path: ./front/dist
-
-      - name: Remove files from server
+      - name: Remove staging files from server
         run: |
           set -xe
           mkdir -p ~/.ssh
