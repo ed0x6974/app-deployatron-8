@@ -12,7 +12,7 @@ jobs:
       run:
         working-directory: ./api
     env: 
-      NODE_VERSION: 18.19.1
+      NODE_VERSION: ${{ vars.NODE_VERSION }}
     steps:
       - uses: actions/checkout@v4
 
@@ -43,7 +43,7 @@ jobs:
       run:
         working-directory: ./front
     env:
-      NODE_VERSION: 18.19.1
+      NODE_VERSION: ${{ vars.NODE_VERSION }}
     steps:
       - uses: actions/checkout@v4
 
@@ -85,7 +85,7 @@ jobs:
     needs: build-frontend
     environment: deploy
     env: 
-      NODE_VERSION: 18.19.1
+      NODE_VERSION: ${{ vars.NODE_VERSION }}
     steps:
       - uses: actions/checkout@v4
 
@@ -123,10 +123,10 @@ jobs:
             --exclude=".git" \
             ./api/* $SERVER_USER@$SERVER_IP:~/api
 
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "cd api && npm ci"
+
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
             "pm2 restart backend"
-
-          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "cd api && npm ci"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER_IP: ${{ vars.SERVER_IP }}

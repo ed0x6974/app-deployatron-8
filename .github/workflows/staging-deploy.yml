@@ -12,7 +12,7 @@ jobs:
       run:
         working-directory: ./front
     env:
-      NODE_VERSION: 18.19.1
+      NODE_VERSION: ${{ vars.NODE_VERSION }}
     steps:
       - uses: actions/checkout@v4
 
@@ -51,13 +51,15 @@ jobs:
         
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     needs: build-frontend
     environment: deploy
     env: 
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SERVER_IP: ${{ vars.SERVER_IP }}
       SERVER_USER: ${{ vars.USER_NAME }}
-      FRONT_HOST: ${{ vars.FRON_HOST }}
+      FRONT_HOST: ${{ vars.FRONT_HOST }}
       GITHUB_HEAD_REF: ${{ github.head_ref }}
       GITHUB_TARGET_REF: ${{ github.base_ref }}
     steps:
@@ -93,6 +95,17 @@ jobs:
 
           scp -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -r ./front/dist/* $SERVER_USER@$SERVER_IP:~/staging/$STAGING_PATH/front
 
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
+            "rm -rf ~/staging/$STAGING_PATH/api/* && mkdir -p ~/staging/$STAGING_PATH/api"
+
+          rsync -avz -e "ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes" \
+            --exclude="node_modules" \
+            --exclude="static" \
+            --exclude=".git" \
+            ./api/* $SERVER_USER@$SERVER_IP:~/staging/$STAGING_PATH/api
+
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "cd ~/staging/$STAGING_PATH/api && npm ci"
+
       - name: Verify
         run: echo "STAGING PATH is $STAGING_PATH"
 
@@ -100,7 +113,6 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
           message: |
-            "✅ This PR has been deployed to staging: https://$STAGING_PATH.$FRONT_HOST/"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+            ✅ This PR has been deployed to staging: https://${{ env.STAGING_PATH }}.${{ env.FRONT_HOST }}/
 
     
