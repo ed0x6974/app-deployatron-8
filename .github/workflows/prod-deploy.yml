@@ -17,7 +17,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Skip ESLint if commit contains skip_eslint
+      - name: Echo env.RUN_ESLINT
+        run: |
+          echo ${{ env.RUN_ESLINT }}
+
+      - name: Determine if ESLint should run
+        run: |
+          if [[ "$(git log -1 --pretty=%B)" == *"skip_eslint"* ]]; then
+            echo "RUN_ESLINT=false" >> $GITHUB_ENV
+          else
+            echo "RUN_ESLINT=true" >> $GITHUB_ENV
+          fi
+
+      - name: Skip ESLint if needed
         run: |
           echo "RUN_ESLINT=$RUN_ESLINT"
           if [ "$RUN_ESLINT" != "true" ]; then
