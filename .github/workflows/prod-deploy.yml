@@ -13,10 +13,14 @@ jobs:
         working-directory: ./api
     env: 
       NODE_VERSION: ${{ vars.NODE_VERSION }}
-      RUN_ESLINT: ${{ contains(github.event.head_commit.message, 'skip_eslint') == false }}
+      RUN_ESLINT: ${{ !contains(github.event.head_commit.message, 'skip_eslint') }}
       MESSAGE: ${{ github.event.head_commit.message }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Echo RUN_ESLINT
+        run: |
+          echo $RUN_ESLINT;
 
       - name: Skip eslint
         run: |
