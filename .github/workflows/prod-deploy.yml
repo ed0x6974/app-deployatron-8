@@ -22,14 +22,12 @@ jobs:
         run: |
           echo $RUN_ESLINT;
 
-      - name: Skip eslint
-        run: |
-          if [ "${RUN_ESLINT}" = "false" ]; then
-            echo "eslint was skipped"
-            exit 0
-          fi
+      - name: Skip notice
+        if: env.RUN_ESLINT == 'false'
+        run: echo "ESLint was skipped"
 
       - name: Cache node modules
+        if: env.RUN_ESLINT == 'true'
         id: cache-api-npm
         uses: actions/cache@v4
         env:
@@ -40,13 +38,16 @@ jobs:
           restore-keys: ${{ env.cache-name }}
 
       - uses: actions/setup-node@v4
+        if: env.RUN_ESLINT == 'true'
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
+        if: env.RUN_ESLINT == 'true'
         run: npm ci
 
       - name: Lint source code with eslint
+        if: env.RUN_ESLINT == 'true'
         run: npm run lint
 
   build-frontend:
