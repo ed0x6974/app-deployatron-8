@@ -20,13 +20,12 @@ jobs:
 
       - name: Skip eslint
         run: |
-          if [ "${RUN_ESLINT2}" = "false" ]; then
+          if [ "${RUN_ESLINT}" = "false" ]; then
             echo "eslint was skipped"
             exit 0
           fi
 
       - name: Cache node modules
-        if: env.RUN_ESLINT2 == 'true'
         id: cache-api-npm
         uses: actions/cache@v4
         env:
