@@ -73,7 +73,7 @@ jobs:
           name: frontend-build
           path: ./front/dist
 
-      - name: Copy files to server
+      - name: Configure SSH connection
         run: |
           set -xe
           mkdir -p ~/.ssh
@@ -87,6 +87,8 @@ jobs:
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "echo Connected!"
 
+      - name: Copy files to server
+        run: |
           STAGING_PATH=$(echo "${GITHUB_HEAD_REF}-${GITHUB_TARGET_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
           echo "STAGING_PATH=$STAGING_PATH" >> $GITHUB_ENV
 
@@ -107,6 +109,33 @@ jobs:
             ./api/* $SERVER_USER@$SERVER_IP:$APP_PATH/staging/$STAGING_PATH/api
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "cd $APP_PATH/staging/$STAGING_PATH/api && npm ci"
+
+      - name: Create db, user, generate dump
+        env:
+          SERVER_IP: ${{ vars.SERVER_IP }}
+          SERVER_USER: ${{ vars.USER_NAME }}
+          PG_HOST: ${{ vars.PG_HOST }}
+          PG_PORT: ${{ vars.PG_PORT }}
+          PG_SUPER_USER_NAME: ${{ secrets.PG_SUPER_USER_NAME }}
+          PG_SUPER_USER_PASS: ${{ secrets.PG_SUPER_USER_PASS }}
+          PG_PROD_USER_NAME: ${{ secrets.PG_PROD_USER_NAME }}
+          PG_PROD_DB_NAME: ${{ secrets.PG_PROD_DB_NAME }}
+          PG_PROD_USER_PASS: ${{ secrets.PG_PROD_USER_PASS }}
+          PG_STAGING_USER_PASS: ${{ secrets.PG_STAGING_USER_PASS }}
+        run: |
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP
+            export PG_HOST='$PG_HOST'
+            export PG_PORT='$PG_PORT'
+            export PG_SUPER_USER_NAME='$PG_SUPER_USER_NAME'
+            export PG_SUPER_USER_PASS='$PG_SUPER_USER_PASS'
+            export PG_PROD_USER_NAME='$PG_PROD_USER_NAME'
+            export PG_PROD_DB_NAME='$PG_PROD_DB_NAME'
+            export PG_PROD_USER_PASS='$PG_PROD_USER_PASS'
+            export STAGING_NAME='$STAGING_PATH'
+            export PG_STAGING_USER_PASS='$PG_STAGING_USER_PASS'
+            bash /var/www/html/app-deployatron-8/bin/create_db_and_import.sh
+          "
+
 
       - name: Verify
         run: echo "STAGING PATH is $STAGING_PATH"
