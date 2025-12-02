@@ -50,7 +50,7 @@ jobs:
         run: ls -la ./dist
         
   deploy:
-    if: "!contains(${{ github.event.issue.pull_request.title }}, 'SKIP STAGING')"
+    if: "${{ !contains(github.event.pull_request.title, 'SKIP STAGING') }}"
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
