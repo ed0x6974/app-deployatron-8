@@ -150,6 +150,7 @@ jobs:
               "PG_HOST='$PG_HOST' \
               PG_PORT='$PG_PORT' \
               STAGING_NAME='$STAGING_PATH' \
+              APP_PATH='$APP_PATH' \
               PG_STAGING_USER_PASS='$PG_STAGING_USER_PASS' \
               bash $APP_PATH/bin/create_pm2_config.sh"
 
