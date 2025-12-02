@@ -24,10 +24,10 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-let users = [
-  { id: 1, name: 'John Doe', age: 30 },
-  { id: 2, name: 'Jane Doe', age: 26 }
-];
+// let users = [
+//   { id: 1, name: 'John Doe', age: 30 },
+//   { id: 2, name: 'Jane Doe', age: 26 }
+// ];
 
 app.get('/api/users', async (req, res) => {
   try {
