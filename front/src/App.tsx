@@ -31,8 +31,8 @@ export function App() {
       return (
         <article>
           <section>id: {user.id}</section>
-          <section>id: {user.name}</section>
-          <section>id: {user.age}</section>
+          <section>name: {user.name}</section>
+          <section>surname: {user.surname}</section>
         </article>
       )
     })
