@@ -146,6 +146,9 @@ jobs:
           PG_STAGING_USER_PASS: ${{ secrets.PG_STAGING_USER_PASS }}
         run: |
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
+            "cd $APP_PATH/staging/$STAGING_PATH/api && npm ci"
+        
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
             $SERVER_USER@$SERVER_IP \
               "PG_HOST='$PG_HOST' \
               PG_PORT='$PG_PORT' \
