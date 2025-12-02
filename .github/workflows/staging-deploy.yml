@@ -143,11 +143,6 @@ jobs:
           SERVER_USER: ${{ vars.USER_NAME }}
           PG_HOST: ${{ vars.PG_HOST }}
           PG_PORT: ${{ vars.PG_PORT }}
-          PG_SUPER_USER_NAME: ${{ secrets.PG_SUPER_USER_NAME }}
-          PG_SUPER_USER_PASS: ${{ secrets.PG_SUPER_USER_PASS }}
-          PG_PROD_USER_NAME: ${{ secrets.PG_PROD_USER_NAME }}
-          PG_PROD_DB_NAME: ${{ secrets.PG_PROD_DB_NAME }}
-          PG_PROD_USER_PASS: ${{ secrets.PG_PROD_USER_PASS }}
           PG_STAGING_USER_PASS: ${{ secrets.PG_STAGING_USER_PASS }}
         run: |
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
