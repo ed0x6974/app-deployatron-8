@@ -137,6 +137,26 @@ jobs:
               APP_PATH='$APP_PATH' \
               bash $APP_PATH/bin/create_db_and_import.sh"
 
+      - name: Run staging backend (api)
+        env:
+          SERVER_IP: ${{ vars.SERVER_IP }}
+          SERVER_USER: ${{ vars.USER_NAME }}
+          PG_HOST: ${{ vars.PG_HOST }}
+          PG_PORT: ${{ vars.PG_PORT }}
+          PG_SUPER_USER_NAME: ${{ secrets.PG_SUPER_USER_NAME }}
+          PG_SUPER_USER_PASS: ${{ secrets.PG_SUPER_USER_PASS }}
+          PG_PROD_USER_NAME: ${{ secrets.PG_PROD_USER_NAME }}
+          PG_PROD_DB_NAME: ${{ secrets.PG_PROD_DB_NAME }}
+          PG_PROD_USER_PASS: ${{ secrets.PG_PROD_USER_PASS }}
+          PG_STAGING_USER_PASS: ${{ secrets.PG_STAGING_USER_PASS }}
+        run: |
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
+            $SERVER_USER@$SERVER_IP \
+              "PG_HOST='$PG_HOST' \
+              PG_PORT='$PG_PORT' \
+              STAGING_NAME='$STAGING_PATH' \
+              PG_STAGING_USER_PASS='$PG_STAGING_USER_PASS' \
+              bash $APP_PATH/bin/create_pm2_config.sh"
 
       - name: Verify
         run: echo "STAGING PATH is $STAGING_PATH"
