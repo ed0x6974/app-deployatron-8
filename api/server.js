@@ -31,6 +31,7 @@ const pool = new Pool({
 
 app.get('/api/users', async (req, res) => {
   try {
+    res.status(500).json({ error: 'test staging error' });
     const result = await pool.query('SELECT * FROM users');
     res.json(result.rows);
   } catch (err) {
