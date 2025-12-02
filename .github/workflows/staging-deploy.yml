@@ -134,7 +134,8 @@ jobs:
               PG_PROD_USER_PASS='$PG_PROD_USER_PASS' \
               STAGING_NAME='$STAGING_PATH' \
               PG_STAGING_USER_PASS='$PG_STAGING_USER_PASS' \
-              bash /var/www/html/app-deployatron-8/bin/create_db_and_import.sh"
+              APP_PATH='$APP_PATH' \
+              bash $APP_PATH/bin/create_db_and_import.sh"
 
 
       - name: Verify
