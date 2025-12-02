@@ -12,34 +12,6 @@ set -euo pipefail
 : "${PG_STAGING_USER_PASS:?Environment variable PG_STAGING_USER_PASS is required}"
 : "${APP_PATH:?Environment variable APP_PATH is required}"
 
-echo "Using environment variables:"
-echo "----------------------------------------"
-echo "  PG_HOST               = $PG_HOST"
-echo "  PG_PORT               = $PG_PORT"
-echo "  PG_SUPER_USER_NAME    = $PG_SUPER_USER_NAME"
-echo "  PG_PROD_USER_NAME     = $PG_PROD_USER_NAME"
-echo "  PG_PROD_DB_NAME       = $PG_PROD_DB_NAME"
-echo "  STAGING_DB_NAME       = $STAGING_NAME"
-echo "  STAGING_DB_USER       = $STAGING_NAME"
-echo ""
-
-check_password() {
-    local var_name="$1"
-    local var_value="$2"
-    if [ -z "$var_value" ]; then
-        echo "  $var_name                = NOT SET!"
-    else
-        echo "  $var_name                = ******"
-    fi
-}
-
-echo "Passwords:"
-echo "----------------------------------------"
-check_password "PG_SUPER_USER_PASS" "$PG_SUPER_USER_PASS"
-check_password "PG_PROD_USER_PASS" "$PG_PROD_USER_PASS"
-check_password "PG_STAGING_USER_PASS" "$PG_STAGING_USER_PASS"
-echo "================="
-
 # create user
 USER_EXISTS=$(PGPASSWORD="$PG_SUPER_USER_PASS" psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_SUPER_USER_NAME" -tAc "SELECT 1 FROM pg_roles WHERE rolname='$STAGING_NAME';")
 if [[ "$USER_EXISTS" == "1" ]]; then
