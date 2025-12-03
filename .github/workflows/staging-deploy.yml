@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  calculateStagingPath:
+  calculate-staging-path:
     runs-on: ubuntu-latest
     outputs:
       staging_path: ${{ steps.setpath.outputs.staging_path }}
