@@ -20,14 +20,14 @@ jobs:
   build-frontend:
     runs-on: ubuntu-latest
     needs:
-      calculateStagingPath
+      calculate-staging-path
     defaults:
       run:
         working-directory: ./front
     env:
       NODE_VERSION: ${{ vars.NODE_VERSION }}
       FRONT_HOST: ${{ vars.FRONT_HOST }}
-      STAGING_PATH: ${{ needs.calculateStagingPath.outputs.staging_path }}
+      STAGING_PATH: ${{ needs.calculate-staging-path.outputs.staging_path }}
     steps:
       - uses: actions/checkout@v4
 
@@ -71,7 +71,7 @@ jobs:
       pull-requests: write
     needs: 
       - build-frontend
-      - calculateStagingPath
+      - calculate-staging-path
     environment: deploy
     env: 
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -81,7 +81,7 @@ jobs:
       GITHUB_HEAD_REF: ${{ github.head_ref }}
       GITHUB_TARGET_REF: ${{ github.base_ref }}
       APP_PATH: ${{ vars.APP_PATH }}
-      STAGING_PATH: ${{ needs.calculateStagingPath.outputs.staging_path }}
+      STAGING_PATH: ${{ needs.calculate-staging-path.outputs.staging_path }}
     steps:
       - uses: actions/checkout@v4
 
