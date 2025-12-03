@@ -5,15 +5,19 @@
   "source": "src/index.html",
   "scripts": {
     "start": "parcel",
-    "build": "parcel build"
+    "build": "APP_ENV=prod node scripts/load-env.js && parcel build",
+    "build:dev": "APP_ENV=dev node scripts/load-env.js && parcel build",
+    "build:prod": "APP_ENV=prod node scripts/load-env.js && parcel build"
   },
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "dotenv": "^17.2.3",
     "parcel": "^2.14.0"
   }
 }
