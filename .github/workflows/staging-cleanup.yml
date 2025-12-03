@@ -1,4 +1,4 @@
-name: staging-deploy
+name: staging-cleanup
 
 on:
   pull_request:
