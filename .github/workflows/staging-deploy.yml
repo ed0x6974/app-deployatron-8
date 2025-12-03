@@ -54,7 +54,7 @@ jobs:
         
       - name: Build frontend
         run: |
-          API_URL="http://$STAGING_PATH.$FRONT_HOST/api" npm run build
+          PARCEL_API_URL="http://$STAGING_PATH.$FRONT_HOST/api" npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
