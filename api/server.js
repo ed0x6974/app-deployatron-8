@@ -35,8 +35,8 @@ if (MODE === 'prod') {
     ca: fs.readFileSync('/home/deployatron/.acme.sh/api.3deploy.shop_ecc/ca.cer'),
   };
 
-  https.createServer(sslOptions, app).listen(3000, () => {
-    console.log('Production HTTPS works on port 3000');
+  https.createServer(sslOptions, app).listen(process.env.PORT, () => {
+    console.log('Production HTTPS works on port ' + process.env.PORT);
   });
 } else {
   const SOCKET_PATH = path.join(__dirname, '../deployatron.sock');
