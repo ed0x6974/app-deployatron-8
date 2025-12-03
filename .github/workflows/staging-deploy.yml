@@ -6,6 +6,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  calculateStagingPath:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set global env var
+        run: |
+          VAL=$(echo "${GITHUB_HEAD_REF}-${GITHUB_BASE_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
+          echo "STAGING_PATH=$VAL" >> $GITHUB_ENV
+
+      - name: Verify staging path
+        run: echo "STAGING PATH inside job1 = $STAGING_PATH"
+
   build-frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -13,6 +24,7 @@ jobs:
         working-directory: ./front
     env:
       NODE_VERSION: ${{ vars.NODE_VERSION }}
+      FRONT_HOST: ${{ vars.FRONT_HOST }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,7 +50,7 @@ jobs:
         
       - name: Build frontend
         run: |
-          npm run build
+          API_URL="http://$STAGING_PATH.$FRONT_HOST/api" npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -89,9 +101,6 @@ jobs:
 
       - name: Copy files to server
         run: |
-          STAGING_PATH=$(echo "${GITHUB_HEAD_REF}-${GITHUB_TARGET_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
-          echo "STAGING_PATH=$STAGING_PATH" >> $GITHUB_ENV
-
           ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP "mkdir -p $APP_PATH/staging"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
@@ -157,9 +166,6 @@ jobs:
               APP_PATH='$APP_PATH' \
               PG_STAGING_USER_PASS='$PG_STAGING_USER_PASS' \
               bash $APP_PATH/bin/create_pm2_config.sh"
-
-      - name: Verify
-        run: echo "STAGING PATH is $STAGING_PATH"
 
       - name: Add staging url to comments
         uses: mshick/add-pr-comment@v2
