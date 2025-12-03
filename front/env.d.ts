@@ -1,6 +1,6 @@
 declare namespace NodeJS {
   interface ProcessEnv {
-    API_URL: string;
+    PARCEL_API_URL: string;
   }
 }
 

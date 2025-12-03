@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
-const API_URL = process.env.API_URL;
+const API_URL = process.env.PARCEL_API_URL;
 
 interface User {
   id: number;
