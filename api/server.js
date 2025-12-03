@@ -10,8 +10,6 @@ const MODE = process.env.MODE || 'staging';
 
 app.use(cors());
 
-app.use(express.static(path.join(__dirname, 'static')));
-
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
