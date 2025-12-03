@@ -83,7 +83,7 @@ jobs:
         
       - name: Build frontend
         run: |
-          npm run build
+          npm run build:prod
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

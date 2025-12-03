@@ -40,6 +40,7 @@ DUMP_FILE="$DUMP_DIR/${PG_PROD_DB_NAME}_$(date +%F_%H-%M-%S).sql"
 
 mkdir -p "$DUMP_DIR"
 
+# generate dump
 echo "Generating dump from production database: $PG_PROD_DB_NAME"
 PGPASSWORD="$PG_PROD_USER_PASS" pg_dump \
   -h "$PG_HOST" \
@@ -48,7 +49,16 @@ PGPASSWORD="$PG_PROD_USER_PASS" pg_dump \
   -F p \
   "$PG_PROD_DB_NAME" \
   > "$DUMP_FILE"
-
 echo "Production dump stored at: $DUMP_FILE"
+
+# restore from dump
+echo "Restoring dump into staging database: $STAGING_NAME"
+PGPASSWORD="$PG_STAGING_USER_PASS" psql \
+  -h "$PG_HOST" \
+  -p "$PG_PORT" \
+  -U "$STAGING_NAME" \
+  -d "$STAGING_NAME" \
+  -f "$DUMP_FILE"
+echo "Dump restored into $STAGING_NAME successfully."
 
 echo "🎉 Done!"

@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
+const API_URL = process.env.PARCEL_API_URL;
+
 interface User {
   id: number;
   name: string;
-  age: number;
+  surname: string;
 }
 
 export function App() {
   const [users, setUsers] = useState<User[] | null>(null);
 
   useEffect(() => {
-    fetch('https://api.3deploy.shop/api/users')
+    fetch(API_URL)
       .then((response) => {
         if (response.status === 200) {
 
@@ -39,7 +41,7 @@ export function App() {
 
     return (
       <section>
-        <h1>Users222</h1>
+        <h1>Users STAGING</h1>
         {usersMarkup}
       </section>
     )
@@ -47,7 +49,7 @@ export function App() {
 
   return (
     <>
-      <h1>Parcel React App test STAGING</h1>
+      <h1>Parcel React App</h1>
     </>
   );
 }

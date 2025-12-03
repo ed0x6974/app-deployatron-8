@@ -6,13 +6,29 @@ on:
   workflow_dispatch:
 
 jobs:
+  calculate-staging-path:
+    runs-on: ubuntu-latest
+    outputs:
+      staging_path: ${{ steps.setpath.outputs.staging_path }}
+    steps:
+      - name: Set global env var
+        id: setpath
+        run: |
+          VAL=$(echo "${GITHUB_HEAD_REF}-${GITHUB_BASE_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
+          echo "staging_path=$VAL" >> $GITHUB_OUTPUT
+
   build-frontend:
     runs-on: ubuntu-latest
+    needs:
+      calculate-staging-path
     defaults:
       run:
         working-directory: ./front
+    environment: deploy
     env:
       NODE_VERSION: ${{ vars.NODE_VERSION }}
+      FRONT_HOST: ${{ vars.FRONT_HOST }}
+      STAGING_PATH: ${{ needs.calculate-staging-path.outputs.staging_path }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,7 +54,7 @@ jobs:
         
       - name: Build frontend
         run: |
-          npm run build
+          PARCEL_API_URL="http://$STAGING_PATH.$FRONT_HOST/api" npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -47,14 +63,18 @@ jobs:
           path: ./front/dist
 
       - name: Check build output exists
-        run: ls -la ./dist
+        run: |
+          ls -la ./dist
+          cat "$(find . -name "*.js" | head -n 1)"
         
   deploy:
     if: "${{ !contains(github.event.pull_request.title, 'SKIP STAGING') }}"
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-    needs: build-frontend
+    needs: 
+      - build-frontend
+      - calculate-staging-path
     environment: deploy
     env: 
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -64,6 +84,7 @@ jobs:
       GITHUB_HEAD_REF: ${{ github.head_ref }}
       GITHUB_TARGET_REF: ${{ github.base_ref }}
       APP_PATH: ${{ vars.APP_PATH }}
+      STAGING_PATH: ${{ needs.calculate-staging-path.outputs.staging_path }}
     steps:
       - uses: actions/checkout@v4
 
@@ -89,9 +110,6 @@ jobs:
 
       - name: Copy files to server
         run: |
-          STAGING_PATH=$(echo "${GITHUB_HEAD_REF}-${GITHUB_TARGET_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
-          echo "STAGING_PATH=$STAGING_PATH" >> $GITHUB_ENV
-
           ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP "mkdir -p $APP_PATH/staging"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
@@ -122,6 +140,7 @@ jobs:
           PG_PROD_DB_NAME: ${{ secrets.PG_PROD_DB_NAME }}
           PG_PROD_USER_PASS: ${{ secrets.PG_PROD_USER_PASS }}
           PG_STAGING_USER_PASS: ${{ secrets.PG_STAGING_USER_PASS }}
+          APP_PATH: ${{ vars.APP_PATH }}
         run: |
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
             $SERVER_USER@$SERVER_IP \
@@ -137,9 +156,27 @@ jobs:
               APP_PATH='$APP_PATH' \
               bash $APP_PATH/bin/create_db_and_import.sh"
 
-
-      - name: Verify
-        run: echo "STAGING PATH is $STAGING_PATH"
+      - name: Run staging backend (api)
+        env:
+          SERVER_IP: ${{ vars.SERVER_IP }}
+          SERVER_USER: ${{ vars.USER_NAME }}
+          PG_HOST: ${{ vars.PG_HOST }}
+          PG_PORT: ${{ vars.PG_PORT }}
+          PG_STAGING_USER_PASS: ${{ secrets.PG_STAGING_USER_PASS }}
+          APP_PATH: ${{ vars.APP_PATH }}
+        run: |
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
+            $SERVER_USER@$SERVER_IP \
+            "cd $APP_PATH/staging/$STAGING_PATH/api && npm ci"
+        
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
+            $SERVER_USER@$SERVER_IP \
+              "PG_HOST='$PG_HOST' \
+              PG_PORT='$PG_PORT' \
+              STAGING_NAME='$STAGING_PATH' \
+              APP_PATH='$APP_PATH' \
+              PG_STAGING_USER_PASS='$PG_STAGING_USER_PASS' \
+              bash $APP_PATH/bin/create_pm2_config.sh"
 
       - name: Add staging url to comments
         uses: mshick/add-pr-comment@v2
