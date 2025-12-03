@@ -6,11 +6,7 @@ const { Pool } = require('pg');
 const app = express();
 const https = require('https');
 
-const sslOptions = {
-  key: fs.readFileSync('/home/deployatron/.acme.sh/api.3deploy.shop_ecc/api.3deploy.shop.key'),
-  cert: fs.readFileSync('/home/deployatron/.acme.sh/api.3deploy.shop_ecc/api.3deploy.shop.cer'),
-  ca: fs.readFileSync('/home/deployatron/.acme.sh/api.3deploy.shop_ecc/ca.cer'),
-};
+const MODE = process.env.MODE || 'staging';
 
 app.use(cors());
 
@@ -24,14 +20,8 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-// let users = [
-//   { id: 1, name: 'John Doe', age: 30 },
-//   { id: 2, name: 'Jane Doe', age: 26 }
-// ];
-
 app.get('/api/users', async (req, res) => {
   try {
-    res.status(500).json({ error: 'test staging error' });
     const result = await pool.query('SELECT * FROM users');
     res.json(result.rows);
   } catch (err) {
@@ -40,6 +30,23 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
-https.createServer(sslOptions, app).listen(3000, () => {
-  console.log('HTTPS works on 3000');
-});
+if (MODE === 'prod') {
+  const sslOptions = {
+    key: fs.readFileSync('/home/deployatron/.acme.sh/api.3deploy.shop_ecc/api.3deploy.shop.key'),
+    cert: fs.readFileSync('/home/deployatron/.acme.sh/api.3deploy.shop_ecc/api.3deploy.shop.cer'),
+    ca: fs.readFileSync('/home/deployatron/.acme.sh/api.3deploy.shop_ecc/ca.cer'),
+  };
+
+  https.createServer(sslOptions, app).listen(3000, () => {
+    console.log('Production HTTPS works on port 3000');
+  });
+} else {
+  const SOCKET_PATH = path.join(__dirname, '../deployatron.sock');
+
+  if (fs.existsSync(SOCKET_PATH)) fs.unlinkSync(SOCKET_PATH);
+
+  app.listen(SOCKET_PATH, () => {
+    fs.chmodSync(SOCKET_PATH, 0o660);
+    console.log(`Staging server running on socket ${SOCKET_PATH}`);
+  });
+}
