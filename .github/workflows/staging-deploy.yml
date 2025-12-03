@@ -24,6 +24,7 @@ jobs:
     defaults:
       run:
         working-directory: ./front
+    environment: deploy
     env:
       NODE_VERSION: ${{ vars.NODE_VERSION }}
       FRONT_HOST: ${{ vars.FRONT_HOST }}
@@ -137,6 +138,7 @@ jobs:
           PG_PROD_DB_NAME: ${{ secrets.PG_PROD_DB_NAME }}
           PG_PROD_USER_PASS: ${{ secrets.PG_PROD_USER_PASS }}
           PG_STAGING_USER_PASS: ${{ secrets.PG_STAGING_USER_PASS }}
+          APP_PATH: ${{ vars.APP_PATH }}
         run: |
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
             $SERVER_USER@$SERVER_IP \
@@ -159,6 +161,7 @@ jobs:
           PG_HOST: ${{ vars.PG_HOST }}
           PG_PORT: ${{ vars.PG_PORT }}
           PG_STAGING_USER_PASS: ${{ secrets.PG_STAGING_USER_PASS }}
+          APP_PATH: ${{ vars.APP_PATH }}
         run: |
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
             $SERVER_USER@$SERVER_IP \

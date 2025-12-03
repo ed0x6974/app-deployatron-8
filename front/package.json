@@ -6,8 +6,7 @@
   "scripts": {
     "start": "parcel",
     "build": "parcel build",
-    "build:dev": "APP_ENV=dev node scripts/load-env.js && parcel build",
-    "build:prod": "APP_ENV=prod node scripts/load-env.js && parcel build"
+    "build:prod": "parcel build"
   },
   "dependencies": {
     "react": "^19.1.0",
