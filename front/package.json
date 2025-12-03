@@ -5,7 +5,7 @@
   "source": "src/index.html",
   "scripts": {
     "start": "parcel",
-    "build": "APP_ENV=prod node scripts/load-env.js && parcel build",
+    "build": "parcel build",
     "build:dev": "APP_ENV=dev node scripts/load-env.js && parcel build",
     "build:prod": "APP_ENV=prod node scripts/load-env.js && parcel build"
   },
