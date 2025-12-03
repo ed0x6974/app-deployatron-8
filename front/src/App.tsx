@@ -13,7 +13,7 @@ export function App() {
   const [users, setUsers] = useState<User[] | null>(null);
 
   useEffect(() => {
-    fetch(API_URL)
+    fetch(`${API_URL}/api/users/`)
       .then((response) => {
         if (response.status === 200) {
 
