@@ -63,7 +63,9 @@ jobs:
           path: ./front/dist
 
       - name: Check build output exists
-        run: ls -la ./dist
+        run: |
+          ls -la ./dist
+          cat "$(find . -name "*.js" | head -n 1)"
         
   deploy:
     if: "${{ !contains(github.event.pull_request.title, 'SKIP STAGING') }}"
