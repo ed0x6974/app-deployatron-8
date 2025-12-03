@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-    needs: build-frontend, calculateStagingPath
+    needs: build-frontend
     environment: deploy
     env: 
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
