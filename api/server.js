@@ -6,7 +6,7 @@ const { Pool } = require('pg');
 const app = express();
 const https = require('https');
 
-const MODE = process.env.MODE || 'staging';
+const MODE = process.env.MODE;
 
 app.use(cors());
 
