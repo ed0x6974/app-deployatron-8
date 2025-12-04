@@ -124,6 +124,9 @@ jobs:
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "echo Connected!"
 
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
+            "pm2 stop backend"
+
           ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP \
             "rm -rf $APP_PATH/front/* && mkdir -p $APP_PATH/front"
 
@@ -141,7 +144,7 @@ jobs:
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP "cd $APP_PATH/api && npm ci"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
-            "pm2 restart backend"
+            "pm2 start backend"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER_IP: ${{ vars.SERVER_IP }}
