@@ -31,6 +31,9 @@ jobs:
           STAGING_PATH=$(echo "${GITHUB_HEAD_REF}-${GITHUB_TARGET_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
           echo "STAGING_PATH=$STAGING_PATH" >> $GITHUB_ENV
 
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \ 
+            "pm2 delete $APP_PATH/staging/$STAGING_PATH/ecosystem.config.js"
+
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
             "rm -rf $APP_PATH/staging/$STAGING_PATH"
         env:
