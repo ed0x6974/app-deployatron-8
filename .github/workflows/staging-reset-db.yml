@@ -89,7 +89,8 @@ jobs:
           PG_STAGING_USER_PASS: ${{ secrets.PG_STAGING_USER_PASS }}
           APP_PATH: ${{ vars.APP_PATH }}
         run: |
-          pm2 stop $STAGING_PATH
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
+              "pm2 stop $STAGING_PATH"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
             $SERVER_USER@$SERVER_IP \
@@ -105,7 +106,8 @@ jobs:
               APP_PATH='$APP_PATH' \
               bash $APP_PATH/bin/restore_db_from_dump.sh"
 
-            pm2 start $STAGING_PATH;
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
+            "pm2 start $STAGING_PATH"
 
       - name: Add staging url to comments
         uses: mshick/add-pr-comment@v2
