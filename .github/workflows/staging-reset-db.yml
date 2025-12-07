@@ -43,7 +43,7 @@ jobs:
       - name: Set global env var
         id: setpath
         run: |
-          VAL=$(echo "${{ needs.get-pr-branches.outputs.base }}-${{ needs.get-pr-branches.outputs.head }}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
+          VAL=$(echo "${{ needs.get-pr-branches.outputs.head }}-${{ needs.get-pr-branches.outputs.base }}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
           echo "staging_path=$VAL" >> $GITHUB_OUTPUT
 
   deploy:
