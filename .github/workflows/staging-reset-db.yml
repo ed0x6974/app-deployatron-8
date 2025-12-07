@@ -90,7 +90,7 @@ jobs:
           APP_PATH: ${{ vars.APP_PATH }}
         run: |
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
-              "pm2 stop $STAGING_PATH"
+              "pm2 stop $APP_PATH/staging/$STAGING_PATH/ecosystem.config.js"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
             $SERVER_USER@$SERVER_IP \
@@ -107,7 +107,7 @@ jobs:
               bash $APP_PATH/bin/restore_db_from_dump.sh"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
-            "pm2 start $STAGING_PATH"
+            "pm2 start $APP_PATH/staging/$STAGING_PATH/ecosystem.config.js"
 
       - name: Add staging url to comments
         uses: mshick/add-pr-comment@v2
