@@ -2,12 +2,40 @@ name: staging-reset-db
 
 on:
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number"
+        required: true
+        type: number
 
 jobs:
+  get-pr-branches:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get PR info
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.inputs.pr_number
+            });
+            core.setOutput("head", pr.data.head.ref);
+            core.setOutput("base", pr.data.base.ref);
+
+      - name: Print branches
+        run: |
+          echo "Head (source): ${{ steps.pr.outputs.head }}"
+          echo "Base (target): ${{ steps.pr.outputs.base }}"
+
   calculate-staging-path:
     runs-on: ubuntu-latest
+    needs: get-pr-branches
     outputs:
-      staging_path: ${{ steps.setpath.outputs.staging_path }}
+      staging_path: "${{ needs.get-pr-branches.outputs.base }}-${{ needs.get-pr-branches.outputs.head }}"
     steps:
       - name: Set global env var
         id: setpath
@@ -82,5 +110,6 @@ jobs:
           message: |
             🔄 Database has been reset to the initial state
           allow-repeats: true
+          pr-number: ${{ github.event.inputs.pr_number }}
 
     
