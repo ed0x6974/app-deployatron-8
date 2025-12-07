@@ -11,6 +11,9 @@ on:
 jobs:
   get-pr-branches:
     runs-on: ubuntu-latest
+    outputs:
+      head: ${{ steps.pr.outputs.head }}
+      base: ${{ steps.pr.outputs.base }}
 
     steps:
       - name: Get PR info
