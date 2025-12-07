@@ -35,12 +35,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-pr-branches
     outputs:
-      staging_path: "${{ needs.get-pr-branches.outputs.base }}-${{ needs.get-pr-branches.outputs.head }}"
+      staging_path: ${{ steps.setpath.outputs.staging_path }}
     steps:
       - name: Set global env var
         id: setpath
         run: |
-          VAL=$(echo "${GITHUB_HEAD_REF}-${GITHUB_BASE_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
+          VAL=$(echo "${{ needs.get-pr-branches.outputs.base }}-${{ needs.get-pr-branches.outputs.head }}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
           echo "staging_path=$VAL" >> $GITHUB_OUTPUT
 
   deploy:
