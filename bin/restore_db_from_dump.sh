@@ -26,6 +26,7 @@ if [[ "$DB_EXISTS" == "1" ]]; then
 else
     echo "Database $STAGING_NAME does not exist, skipping drop."
 fi
+
 # create db
 DB_EXISTS=$(PGPASSWORD="$PG_SUPER_USER_PASS" psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_SUPER_USER_NAME" -tAc "SELECT 1 FROM pg_database WHERE datname='$STAGING_NAME';")
 if [[ "$DB_EXISTS" == "1" ]]; then
@@ -33,6 +34,13 @@ if [[ "$DB_EXISTS" == "1" ]]; then
 else
     PGPASSWORD="$PG_SUPER_USER_PASS" psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_SUPER_USER_NAME" -c "CREATE DATABASE \"$STAGING_NAME\" OWNER \"$STAGING_NAME\";"
     echo "Database $STAGING_NAME was created."
+fi
+
+DUMP_DIR="$APP_PATH/staging/$STAGING_NAME/db-dump"
+DUMP_FILE=$(find "$DUMP_DIR" -maxdepth 1 -type f -name "*.sql" | sort | head -n 1)
+if [[ -z "$DUMP_FILE" ]]; then
+  echo "No .sql dump file found in $DUMP_DIR"
+  exit 1
 fi
 
 # restore from dump
