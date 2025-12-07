@@ -111,10 +111,12 @@ jobs:
 
       - name: Add staging url to comments
         uses: mshick/add-pr-comment@v2
+        permissions:
+          pull-requests: write
         with:
           message: |
             🔄 Database has been reset to the initial state
           allow-repeats: true
-          pr-number: ${{ github.event.inputs.pr_number }}
+          issue: ${{ github.event.inputs.pr_number }}
 
     
