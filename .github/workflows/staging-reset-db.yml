@@ -118,5 +118,3 @@ jobs:
             🔄 Database has been reset to the initial state
           allow-repeats: true
           issue: ${{ github.event.inputs.pr_number }}
-
-    
