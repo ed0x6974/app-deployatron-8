@@ -11,6 +11,9 @@ on:
 jobs:
   get-pr-branches:
     runs-on: ubuntu-latest
+    outputs:
+      head: ${{ steps.pr.outputs.head }}
+      base: ${{ steps.pr.outputs.base }}
 
     steps:
       - name: Get PR info
@@ -35,12 +38,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-pr-branches
     outputs:
-      staging_path: "${{ needs.get-pr-branches.outputs.base }}-${{ needs.get-pr-branches.outputs.head }}"
+      staging_path: ${{ steps.setpath.outputs.staging_path }}
     steps:
       - name: Set global env var
         id: setpath
         run: |
-          VAL=$(echo "${GITHUB_HEAD_REF}-${GITHUB_BASE_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
+          VAL=$(echo "${{ needs.get-pr-branches.outputs.head }}-${{ needs.get-pr-branches.outputs.base }}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
           echo "staging_path=$VAL" >> $GITHUB_OUTPUT
 
   deploy:
@@ -86,7 +89,8 @@ jobs:
           PG_STAGING_USER_PASS: ${{ secrets.PG_STAGING_USER_PASS }}
           APP_PATH: ${{ vars.APP_PATH }}
         run: |
-          pm2 stop $STAGING_PATH
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
+              "pm2 stop $APP_PATH/staging/$STAGING_PATH/ecosystem.config.js"
 
           ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes \
             $SERVER_USER@$SERVER_IP \
@@ -102,14 +106,17 @@ jobs:
               APP_PATH='$APP_PATH' \
               bash $APP_PATH/bin/restore_db_from_dump.sh"
 
-            pm2 start $STAGING_PATH;
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
+            "pm2 start $APP_PATH/staging/$STAGING_PATH/ecosystem.config.js"
 
       - name: Add staging url to comments
         uses: mshick/add-pr-comment@v2
+        permissions:
+          pull-requests: write
         with:
           message: |
             🔄 Database has been reset to the initial state
           allow-repeats: true
-          pr-number: ${{ github.event.inputs.pr_number }}
+          issue: ${{ github.event.inputs.pr_number }}
 
     
