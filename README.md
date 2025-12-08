@@ -18,6 +18,25 @@ This document describes the deployment process for the project
 
 ---
 
+### How it works
+
+#### After push to main 
+Workflow: **[prod-deploy](./.github/workflows/prod-deploy.yml)**
+
+
+1. Stop the backend using pm2
+2. Build the frontend and place built files in:  
+   `app_path/front/`
+3. Copy backend files to:  
+   `app_path/api/`
+4. Frontend becomes accessible at:  
+   `https://3deploy.shop`
+5. Backend becomes accessible at:  
+   `https://api.3deploy.shop/`
+6. Start the backend using PM2 with `app_path/ecosystem.config.js`
+
+---
+
 ### 2. Staging Deployment (PR-based)
 
 | Trigger           | Environment | Behavior                                   | Optional Flags                    |
@@ -45,7 +64,7 @@ Workflow: **[staging-deploy](./.github/workflows/staging-deploy.yml)**
 1. Create a directory:  
    `app_path/staging/feature-b-main/`
 2. Generate a dump of the production database.
-3. Build the frontend and place it in:  
+3. Build the frontend and place built files in:  
    `app_path/staging/feature-b-main/front/`
 4. Copy backend files to:  
    `app_path/staging/feature-b-main/api/`
@@ -53,9 +72,9 @@ Workflow: **[staging-deploy](./.github/workflows/staging-deploy.yml)**
    `app_path/staging/feature-b-main/ecosystem.config.js`
 6. Create a database user and database, then import the generated dump.
 7. Frontend becomes accessible at:  
-   `https://feature-b-main.3deploy.shop`
+   `http://feature-b-main.3deploy.shop`
 8. Backend becomes accessible at:  
-   `https://feature-b-main.3deploy.shop/api`
+   `http://feature-b-main.3deploy.shop/api`
 9. Start the backend using PM2 and `app_path/staging/feature-b-main/ecosystem.config.js`
 
 ---
