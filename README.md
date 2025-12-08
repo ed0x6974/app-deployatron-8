@@ -88,3 +88,7 @@ Workflow: **[staging-cleanup](./.github/workflows/staging-cleanup.yml)**
 3. Remove the corresponding database user and database.
 
 ---
+
+## Server configuration
+
+## Repository configuration
