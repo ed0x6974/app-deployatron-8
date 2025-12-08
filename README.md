@@ -26,14 +26,14 @@ Workflow: **[prod-deploy](./.github/workflows/prod-deploy.yml)**
 
 1. Stop the backend using pm2
 2. Build the frontend and place built files in:  
-   `app_path/front/`
+   `<appPath>/front/`
 3. Copy backend files to:  
-   `app_path/api/`
+   `<appPath>/api/`
 4. Frontend becomes accessible at:  
-   `https://3deploy.shop`
+   `https://<domain>`
 5. Backend becomes accessible at:  
-   `https://api.3deploy.shop/`
-6. Start the backend using PM2 with `app_path/ecosystem.config.js`
+   `https://api.<domain>/`
+6. Start the backend using PM2 with `<appPath>/ecosystem.config.js`
 
 ---
 
@@ -62,20 +62,20 @@ Every pull request generates a unique staging environment name based on the PR b
 Workflow: **[staging-deploy](./.github/workflows/staging-deploy.yml)**
 
 1. Create a directory:  
-   `app_path/staging/feature-b-main/`
+   `<appPath>/staging/feature-b-main/`
 2. Generate a dump of the production database.
 3. Build the frontend and place built files in:  
-   `app_path/staging/feature-b-main/front/`
+   `<appPath>/staging/feature-b-main/front/`
 4. Copy backend files to:  
-   `app_path/staging/feature-b-main/api/`
+   `<appPath>/staging/feature-b-main/api/`
 5. Generate a PM2 configuration file:  
-   `app_path/staging/feature-b-main/ecosystem.config.js`
+   `<appPath>/staging/feature-b-main/ecosystem.config.js`
 6. Create a database user and database, then import the generated dump.
 7. Frontend becomes accessible at:  
-   `http://feature-b-main.3deploy.shop`
+   `http://feature-b-main.<domain>`
 8. Backend becomes accessible at:  
-   `http://feature-b-main.3deploy.shop/api`
-9. Start the backend using PM2 and `app_path/staging/feature-b-main/ecosystem.config.js`
+   `http://feature-b-main.<domain>/api`
+9. Start the backend using PM2 and `<appPath>/staging/feature-b-main/ecosystem.config.js`
 
 ---
 
@@ -83,7 +83,7 @@ Workflow: **[staging-deploy](./.github/workflows/staging-deploy.yml)**
 Workflow: **[staging-cleanup](./.github/workflows/staging-cleanup.yml)**
 
 1. Kill the PM2 process and remove the directory:  
-   `app_path/staging/feature-b-main`
+   `<appPath>/staging/feature-b-main`
 2. Delete all staging files related to the PR environment.
 3. Remove the corresponding database user and database.
 
