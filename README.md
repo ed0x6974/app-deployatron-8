@@ -30,9 +30,9 @@ Workflow: **[prod-deploy](./.github/workflows/prod-deploy.yml)**
 3. Copy backend files to:  
    `<appPath>/api/`
 4. Frontend becomes accessible at:  
-   `https://3deploy.shop`
+   `https://<domain>`
 5. Backend becomes accessible at:  
-   `https://api.3deploy.shop/`
+   `https://api.<domain>/`
 6. Start the backend using PM2 with `<appPath>/ecosystem.config.js`
 
 ---
@@ -72,9 +72,9 @@ Workflow: **[staging-deploy](./.github/workflows/staging-deploy.yml)**
    `<appPath>/staging/feature-b-main/ecosystem.config.js`
 6. Create a database user and database, then import the generated dump.
 7. Frontend becomes accessible at:  
-   `http://feature-b-main.3deploy.shop`
+   `http://feature-b-main.<domain>`
 8. Backend becomes accessible at:  
-   `http://feature-b-main.3deploy.shop/api`
+   `http://feature-b-main.<domain>/api`
 9. Start the backend using PM2 and `<appPath>/staging/feature-b-main/ecosystem.config.js`
 
 ---
