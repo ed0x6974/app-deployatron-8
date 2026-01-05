@@ -12,7 +12,7 @@ When a pull request is created, the branch is automatically deployed to staging,
 When pushing to the `main` branch, the branch is automatically deployed to production.
 
 ### 3. Minimize discrepancies between the staging environment and production
-Staging environment uses a copy of the production db, the same environment and build. Deployment is fully automated, eliminating the risk of manual errors.
+Staging environment uses a copy of the production db, the same environment and build. Deployment is fully automated, eliminating the risk of manual errors. We don't change the code between staging and production, only environment variables are modified.
 
 
 ## Deployment Strategy
