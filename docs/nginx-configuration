@@ -1,0 +1,78 @@
+server {
+    listen 80;
+    server_name ~^(?<subdomain>[^.]+)\.3deploy\.shop$;
+
+    if ($subdomain = "api") { return 444; }
+
+    root /var/www/html/app-deployatron-8/staging/$subdomain/front;
+    index index.html;
+
+    location /api/ {
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass http://unix:/var/www/html/app-deployatron-8/staging/$subdomain/deployatron.sock;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        try_files $uri /index.html;
+    }
+}
+
+server {
+    listen 80;
+    server_name 3deploy.shop;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name 3deploy.shop;
+
+    ssl_certificate /root/.acme.sh/3deploy.shop_ecc/fullchain.cer;
+    ssl_certificate_key /root/.acme.sh/3deploy.shop_ecc/3deploy.shop.key;
+
+    root /var/www/html/app-deployatron-8/front;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+}
+
+server {
+    listen 80;
+    server_name api.3deploy.shop;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name api.3deploy.shop;
+
+    ssl_certificate /root/.acme.sh/api.3deploy.shop_ecc/fullchain.cer;
+    ssl_certificate_key /root/.acme.sh/api.3deploy.shop_ecc/api.3deploy.shop.key;
+
+    location / {
+        proxy_pass https://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+server {
+    listen 443;
+    server_name ~^(?<subdomain>[^.]+)\.3deploy\.shop$;
+
+    ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
+    ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
+    
+    add_header Content-Type text/html;
+    return 200 "<html><body><script>window.location.href = 'http://' + window.location.host + window.location.pathname + window.location.search;</script></body></html>";
+}
