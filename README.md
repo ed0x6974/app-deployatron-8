@@ -5,7 +5,7 @@ This document describes the deployment process for the project
 ## Goals
 
 ### 1. Speed up the deployment process to the staging environment
-When a pull request is created, the branch is automatically deployed to staging, and a ready-to-use link to the deployed app appears in the comments. During testing, the database can be reset to its initial state with a single click. [DEMO](https://github.com/ed0x6974/app-deployatron-8/pull/16).
+When a pull request is created, the branch is automatically deployed to staging, and a ready-to-use link to the deployed app appears in the comments. During testing, the database can be reset to its initial state with a single click. [DEMO](https://github.com/ed0x6974/app-deployatron-8/pull/17).
 
 
 ### 2. Speed up the deployment process to production
