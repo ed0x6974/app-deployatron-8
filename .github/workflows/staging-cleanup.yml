@@ -10,7 +10,7 @@ jobs:
   cleanup:
     runs-on: ubuntu-latest
     environment: deploy
-    env: 
+    env:
       NODE_VERSION: ${{ vars.NODE_VERSION }}
       APP_PATH: ${{ vars.APP_PATH }}
     steps:
@@ -42,7 +42,24 @@ jobs:
           SERVER_USER: ${{ vars.USER_NAME }}
           GITHUB_HEAD_REF: ${{ github.head_ref }}
           GITHUB_TARGET_REF: ${{ github.base_ref }}
-    
+
+      - name: Copy bin/cleanup_db_and_user to server
+        run: |
+          set -xe
+
+          STAGING_PATH=$(echo "${GITHUB_HEAD_REF}-${GITHUB_TARGET_REF}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
+
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes $SERVER_USER@$SERVER_IP \
+            "mkdir -p $APP_PATH/bin"
+
+          scp -i ~/.ssh/id_rsa bin/cleanup_db_and_user.sh $SERVER_USER@$SERVER_IP:$APP_PATH/bin/
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_IP: ${{ vars.SERVER_IP }}
+          SERVER_USER: ${{ vars.USER_NAME }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_TARGET_REF: ${{ github.base_ref }}
+
       - name: Cleanup db
         env:
           SERVER_IP: ${{ vars.SERVER_IP }}
