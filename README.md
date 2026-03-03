@@ -120,12 +120,7 @@ The deployment user must have minimal required privileges.
 ### 3. Install Node.js and PM2
 The installed Node.js version MUST exactly match the NODE_VERSION environment variable defined in the repository.
 
-### 4. Application binaries
-1) `<repository>/bin → <APP_PATH>/bin`
-2) Make all files executable
-3) Set correct ownership
-
-### 5. Wildcard subdomains
+### 4. Wildcard subdomains
 DNS record: `*.example.com → SERVER_IP`
 
 ## Repository configuration
