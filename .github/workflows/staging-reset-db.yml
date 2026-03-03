@@ -62,6 +62,8 @@ jobs:
       APP_PATH: ${{ vars.APP_PATH }}
       STAGING_PATH: ${{ needs.calculate-staging-path.outputs.staging_path }}
     steps:
+      - uses: actions/checkout@v4
+
       - name: Configure SSH connection
         run: |
           set -xe
@@ -78,7 +80,7 @@ jobs:
 
       - name: Copy bin files to server
         run: |
-          ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP "mkdir -p $APP_PATH/staging/bin"
+          ssh -i ~/.ssh/id_rsa $SERVER_USER@$SERVER_IP "mkdir -p $APP_PATH/bin"
           scp -i ~/.ssh/id_rsa bin/restore_db_from_dump.sh $SERVER_USER@$SERVER_IP:$APP_PATH/bin/
 
       - name: Create db, user, generate dump
