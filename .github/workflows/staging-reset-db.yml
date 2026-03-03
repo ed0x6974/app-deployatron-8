@@ -62,6 +62,8 @@ jobs:
       APP_PATH: ${{ vars.APP_PATH }}
       STAGING_PATH: ${{ needs.calculate-staging-path.outputs.staging_path }}
     steps:
+      - uses: actions/checkout@v4
+
       - name: Configure SSH connection
         run: |
           set -xe
